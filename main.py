@@ -7,14 +7,13 @@ def input_error(func):
             result = func (*args, **kwargs)
             return result
         except KeyError:
-            print ('KeyError')
-            return print ("Немає контакта з таким ім'ям")
+            print ('Невідома помилка KeyError. Спробуй іншу команду')
         except ValueError:
-            print ('ValueError')
+            print ('Невідома помилка ValueError. Спробуй іншу команду')
         except IndexError:
             print ('Недостатньо параметрів для запису/зміни/виводу контакта\n')
         except TypeError:
-            print ('TypeError вверху')
+            print ('Невідома помилка TypeError. Спробуй іншу команду')
     return inner   
 
 # Запускаємо каррування - набір функцій з діями та словничок
@@ -43,11 +42,8 @@ def def_change(list): # Список, що ввів юзер. Цікавить 2
 # Функція показу номеру телефону - після вводу 'phone'
 @input_error
 def def_phone(list): # Список, що ввів юзер. Цікавить другий ел - ім'я
-    if USERS.get (list[0].title()):
-        return print (f'Номер телефону {list[0].title()}: \
-{USERS.get(list[0].title())}\n')
-    else:
-        return print ('Наразі такого контакту не існує\n')
+    return print (f'Номер телефону {list[0].title()}: \
+{USERS.get(list[0].title(), "Наразі такого контакту не існує")}\n')
 
 # Функція виводу всього довідника - після вводу 'show'
 def def_show(*args):
@@ -57,6 +53,7 @@ def def_show(*args):
     for name, number in USERS.items():
         print ('|{:<20}|{:<26}|'.format (name, number))
     print ('|{:-^20}|{:-^26}|'.format ('-', '-'))
+    print ('')
     return None
 
 # Функція виходу з прощальним рядком - після вводу 'bye', 'exit', 'close'
