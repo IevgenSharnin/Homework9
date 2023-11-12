@@ -61,7 +61,7 @@ def def_exit(*args):
     with open ('users.txt', 'w') as file_write:
         for name, number in USERS.items():
             file_write.write (f'{name}:{number}\n')
-    return print ('Good bye!\n')
+    return print ('Good bye!\nВведені дані збережено у файл.\n')
 
 COMMANDS = {'hello': ['-', 'почати роботу', def_hello],
             'add': ['<контакт> <номер телефону>', 
