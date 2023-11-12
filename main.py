@@ -58,6 +58,9 @@ def def_show(*args):
 
 # Функція виходу з прощальним рядком - після вводу 'bye', 'exit', 'close'
 def def_exit(*args):
+    with open ('users.txt', 'w') as file_write:
+        for name, number in USERS.items():
+            file_write.write (f'{name}:{number}\n')
     return print ('Good bye!\n')
 
 COMMANDS = {'hello': ['-', 'почати роботу', def_hello],
@@ -95,8 +98,19 @@ def main():
     print ('Параметри треба вводити без углових дужок одним словом через пробіл після')
     print ('команди або іншого параметра.\n')
 
+# Заповнення словничка із файла (якщо є) 
+    try:
+        with open ('users.txt', 'r') as file_read:
+            while True:
+                line = file_read.readline ()
+                if not line:
+                    break
+                USERS.update ({line.split(':')[0]: line.split(':')[1][:-1]})
+    except FileNotFoundError:
+        pass
+
     while True:
-        command_from_user = input ('Введіть команду: ').strip().lower().split()
+        command_from_user = input ('Введіть команду: ').strip().lower().split(' ')
         handler = get_handler(command_from_user[0])
         try:
             handler (command_from_user[1:])
