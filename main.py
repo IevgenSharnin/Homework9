@@ -7,38 +7,61 @@ def input_error(func):
             result = func (*args, **kwargs)
             return result
         except KeyError:
+            print ('KeyError')
             return print ("Немає контакта з таким ім'ям")
         except ValueError:
-            pass
+            print ('ValueError')
         except IndexError:
-            pass
+            print ('Недостатньо параметрів для запису/зміни/виводу контакта\n')
+        except TypeError:
+            print ('TypeError вверху')
     return inner   
 
 # Запускаємо каррування - набір функцій з діями та словничок
 # Функція рядка з привітанням - після вводу 'hello'
-def def_hello():
-    return print ('Hello, how can I help you?')
+def def_hello(*args):
+    return print ('Hello, how can I help you?\n')
 
 # Функція обробки додавання нового користувача - після вводу 'add'
-def def_add():
-    return None
+@input_error
+def def_add(list): # Список, що ввів юзер, окрім команди. Цікавить 1-й і 2-й ім'я + номер
+    if list[0].title() in USERS.keys():
+        return print ('Такий контакт існує. Спробуйте команду "change"\n')
+    else:
+        USERS.update ({list[0].title(): list[1]})
+        return print ('Контакт успішно додано\n')
 
 # Функція зміни телефону - після вводу 'change'
-def def_change():
-    return None
+@input_error
+def def_change(list): # Список, що ввів юзер. Цікавить 2-й і 3-й ім'я + номер
+    if list[0].title() in USERS.keys():
+        USERS [list[0].title()] = list[1]
+        return print ('Контакт успішно обновлений\n')
+    else:
+        return print ('Такого контакту не існує. Спробуйте команду "add"\n')
 
 # Функція показу номеру телефону - після вводу 'phone'
-def def_phone():
-    return None
+@input_error
+def def_phone(list): # Список, що ввів юзер. Цікавить другий ел - ім'я
+    if USERS.get (list[0].title()):
+        return print (f'Номер телефону {list[0].title()}: \
+{USERS.get(list[0].title())}\n')
+    else:
+        return print ('Наразі такого контакту не існує\n')
 
 # Функція виводу всього довідника - після вводу 'show'
-def def_show():
+def def_show(*args):
+    print ('|{:-^20}|{:-^26}|'.format ('-', '-'))
+    print ('|{:^20}|{:^26}|'.format ("Ім'я", 'Номер телефону'))
+    print ('|{:-^20}|{:-^26}|'.format ('-', '-'))
+    for name, number in USERS.items():
+        print ('|{:<20}|{:<26}|'.format (name, number))
+    print ('|{:-^20}|{:-^26}|'.format ('-', '-'))
     return None
 
 # Функція виходу з прощальним рядком - після вводу 'bye', 'exit', 'close'
-def def_exit():
-    print ('Good bye!')
-    return None
+def def_exit(*args):
+    return print ('Good bye!\n')
 
 COMMANDS = {'hello': ['-', 'почати роботу', def_hello],
             'add': ['<контакт> <номер телефону>', 
@@ -53,6 +76,13 @@ COMMANDS = {'hello': ['-', 'почати роботу', def_hello],
             'close': ['-', 'закінчити роботу', def_exit], 
             'exit': ['-', 'закінчити роботу', def_exit]}
 
+@input_error
+def get_handler(command):
+    try:
+        return COMMANDS[command][-1]
+    except:
+        return print ('Така команда наразі не підтримується. Спробуй іншу\n')
+
 def main():
     print ('')
     print ('Привіт. Я консольний бот-телефонний довідник.')
@@ -66,11 +96,18 @@ def main():
     print ('|{:-^10}|{:-^26}|{:-^44}|'.format ('-', '-', '-'))
     print ('')
     print ('Параметри треба вводити без углових дужок одним словом через пробіл після')
-    print ('команди або іншого параметра.')
-    print ('')
+    print ('команди або іншого параметра.\n')
 
-    command_from_user = input ('Введіть команду: ').strip().lower().split()
-    print (command_from_user)
+    while True:
+        command_from_user = input ('Введіть команду: ').strip().lower().split()
+        handler = get_handler(command_from_user[0])
+        try:
+            handler (command_from_user[1:])
+        except TypeError:
+            continue
+#        print (USERS)
+        if command_from_user[0] in ['exit', 'close', 'bye']:
+            break
 
 if __name__ == "__main__":
     main()
